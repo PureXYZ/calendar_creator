@@ -1,5 +1,5 @@
 1165
-Math 237
-Stat 230
-Econ 102
-Afm 102
+       Math   237      001   
+Stat 230 002
+Econ 102 001
+Afm 102 001
