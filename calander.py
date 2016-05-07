@@ -7,6 +7,7 @@ uw = UWaterlooAPI(api_key="8ab9363c27cf84a3fdf526a89269e81a")
 
 calendar = Calendar()
 
+print uw.term_course_schedule("1165", "ggnore", "1337")
 
 def get_section(course_info, sec_id):
         for section in course_info:
@@ -35,7 +36,7 @@ def get_sections_ass(course_info, ass_id, already_chosen1, already_chosen2):
 
 
 def get_section_date(section):
-        return section["section"]
+        return section["classes"]
 
 
 def get_section_location(section):
@@ -116,8 +117,13 @@ for index in range(len(course_name)):
         
         course_info = uw.term_course_schedule(term_num, name, num)
 
+        if not course_info:
+                print "Warning! Course " + name + " " + num + " could not be found!"
+                continue
+
 
         custom_pick = 0;
+        section_found = 0;
         
         for section in course_info:
 
@@ -125,6 +131,8 @@ for index in range(len(course_name)):
                         custom_pick = 1;
                 
                 if section["section"][-3:] == sec:
+
+                        section_found = 1;
 
                         the_section = section
 
@@ -158,6 +166,10 @@ for index in range(len(course_name)):
                                 section_rel_2_name = get_section_name(related_section_2)
                                 
                                 add_event(section_rel_2_date, section_rel_2_location, section_rel_2_name)
+
+        if section_found = 0:
+                print "Warning! Course section " + sec + " could not be found!"
+                continue
         
 
         if custom_pick == 1:
