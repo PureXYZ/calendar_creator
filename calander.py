@@ -7,7 +7,6 @@ uw = UWaterlooAPI(api_key="8ab9363c27cf84a3fdf526a89269e81a")
 
 calendar = Calendar()
 
-print uw.term_course_schedule("1165", "ggnore", "1337")
 
 def get_section(course_info, sec_id):
         for section in course_info:
@@ -167,7 +166,7 @@ for index in range(len(course_name)):
                                 
                                 add_event(section_rel_2_date, section_rel_2_location, section_rel_2_name)
 
-        if section_found = 0:
+        if section_found == 0:
                 print "Warning! Course section " + sec + " could not be found!"
                 continue
         
@@ -190,12 +189,20 @@ for index in range(len(course_name)):
                 while pick_sections:
                         print "\nNote for " + the_section["subject"] + " " + the_section["catalog_number"] + ": " + the_section["note"]
                         section_type = pick_sections[0]["section"][:-3].strip()
-                        pick_input = (raw_input("\nPlease enter your enrolled " + section_type + \
-                                                " section for " + the_section["subject"] + " " + \
-                                                the_section["catalog_number"] + " (e.g. TUT 101 = 101): ")).strip()
-                        section_input_cleaned = section_type + " " + pick_input
-                           
-                        section_chosen = get_section_full(course_info, section_input_cleaned)
+
+                        section_chosen = -1
+                        while section_chosen == -1:
+                                
+                                pick_input = (raw_input("\nPlease enter your enrolled " + section_type + \
+                                                        " section for " + the_section["subject"] + " " + \
+                                                        the_section["catalog_number"] + " (e.g. TUT 101 = 101): ")).strip()
+                                section_input_cleaned = section_type + " " + pick_input
+                                   
+                                section_chosen = get_section_full(course_info, section_input_cleaned)
+
+                                if section_chosen == -1:
+                                        print "\nError! section not found please try again!"
+                        
 
                         section_chosen_date = get_section_date(section_chosen)
                         section_chosen_location = get_section_location(section_chosen)
