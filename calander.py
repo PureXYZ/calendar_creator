@@ -7,7 +7,6 @@ uw = UWaterlooAPI(api_key="8ab9363c27cf84a3fdf526a89269e81a")
 
 calendar = Calendar()
 
-pprint.pprint(uw.term_course_schedule("1165", "ece", "106"))
 
 def get_section(course_info, sec_id):
         for section in course_info:
@@ -36,7 +35,7 @@ def get_sections_ass(course_info, ass_id, already_chosen1, already_chosen2):
 
 
 def get_section_date(section):
-        return section["classes"]
+        return section["section"]
 
 
 def get_section_location(section):
@@ -60,7 +59,7 @@ def remove_section_type(pick_sections, section_type):
         sections = []
         for section in pick_sections:
                 if section["section"][:-3].strip() != section_type:
-                        sections.append(sections)
+                        sections.append(section)
         return sections
 
 
@@ -101,6 +100,9 @@ while True:
 
 
 def add_event(date, location, name):
+
+        pprint.pprint(date)
+        print name
         
         return
 
@@ -195,6 +197,8 @@ for index in range(len(course_name)):
         if custom_pick == 0:
                 ass_id = the_section["associated_class"]
 
+                course_info_main_removed = remove_section_type(course_info, the_section["section"][:-3].strip())
+
                 already_chosen1 = ""
                 already_chosen2 = ""
 
@@ -204,11 +208,10 @@ for index in range(len(course_name)):
                 if related_section_2:
                         already_chosen2 = related_section_2["section"][:-3].strip()
                         
-                course_info_lec_removed = get_sections_ass(course_info, ass_id, already_chosen1, already_chosen2)
-
-                course_info_lec_removed = remove_section_type(course_info_lec_removed, "LEC")
+                course_info_main_removed = get_sections_ass(course_info, ass_id, already_chosen1, already_chosen2)
                 
-                for section in course_info_lec_removed:
+                
+                for section in course_info_main_removed:
                         if section["associated_class"] == ass_id:
                                 section_date = get_section_date(section)
                                 section_location = get_section_location(section)
