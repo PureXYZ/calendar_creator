@@ -7,7 +7,7 @@ uw = UWaterlooAPI(api_key="8ab9363c27cf84a3fdf526a89269e81a")
 
 calendar = Calendar()
 
-
+pprint.pprint(uw.term_course_schedule("1165", "ece", "106"))
 
 def get_section(course_info, sec_id):
         for section in course_info:
@@ -101,6 +101,7 @@ while True:
 
 
 def add_event(date, location, name):
+        
         return
 
 
@@ -189,6 +190,31 @@ for index in range(len(course_name)):
                         add_event(section_chosen_date, section_chosen_location, section_chosen_name)
 
                         pick_sections = remove_section_type(pick_sections, section_type)
+
+
+        if custom_pick == 0:
+                ass_id = the_section["associated_class"]
+
+                already_chosen1 = ""
+                already_chosen2 = ""
+
+                if related_section_1:
+                        already_chosen1 = related_section_1["section"][:-3].strip()
+
+                if related_section_2:
+                        already_chosen2 = related_section_2["section"][:-3].strip()
+                        
+                course_info_lec_removed = get_sections_ass(course_info, ass_id, already_chosen1, already_chosen2)
+
+                course_info_lec_removed = remove_section_type(course_info_lec_removed, "LEC")
+                
+                for section in course_info_lec_removed:
+                        if section["associated_class"] == ass_id:
+                                section_date = get_section_date(section)
+                                section_location = get_section_location(section)
+                                section_name = get_section_name(section)
+                                add_event(section_date, section_location, section_name)
+                
 
 
                 
