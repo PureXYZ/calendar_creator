@@ -101,9 +101,6 @@ while True:
 
 
 def add_event(date, location, name):
-        new_event = Event(name)
-
-        
         return
 
 
@@ -173,12 +170,14 @@ for index in range(len(course_name)):
                 pick_sections = get_sections_ass(course_info, 99, already_chosen1, already_chosen2)
 
                 if pick_sections:
-                        print "Note: Section numbers are different for lectures and tutorials. (e.g. LEC 001 and TUT 101, 001 != 101)"
+                        print "\nNote: Section numbers are different for lectures and tutorials. (e.g. LEC 001 and TUT 101, 001 != 101)"
 
                 while pick_sections:
-                        print "Note: " + the_section["note"]
+                        print "\nNote for " + the_section["subject"] + " " + the_section["catalog_number"] + ": " + the_section["note"]
                         section_type = pick_sections[0]["section"][:-3].strip()
-                        pick_input = (raw_input("Please enter your enrolled" + section_type + " section (e.g. TUT 101 = 101): ")).strip()
+                        pick_input = (raw_input("\nPlease enter your enrolled " + section_type + \
+                                                " section for " + the_section["subject"] + " " + \
+                                                the_section["catalog_number"] + " (e.g. TUT 101 = 101): ")).strip()
                         section_input_cleaned = section_type + " " + pick_input
                            
                         section_chosen = get_section_full(course_info, section_input_cleaned)
@@ -200,6 +199,5 @@ for index in range(len(course_name)):
 file_out = open(term_cleaned + '.ics', 'w')
 file_out.writelines(calendar)
 file_out.close()
-                                
                         
                         
