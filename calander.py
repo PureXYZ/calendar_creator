@@ -10,6 +10,12 @@ calendar = Calendar()
 
 def add_event(date, location, name):
         new_event = Event()
+
+
+
+
+
+        
         return
 
 
@@ -37,19 +43,25 @@ def get_term_num(terms_info, term_cleaned):
                 for term in terms_info[year]:
                         if term["name"] == term_cleaned:
                                 return term["id"]
+        return -1
 
-        
 
-term_input = (raw_input("Enter the term (e.g. Spring 2016): ")).strip()
-term_year = term_input[-4:]
-term_season = term_input[:-4].strip()
-term_cleaned = term_season + " " + term_year
 
-terms_info = (uw.terms())["listings"]
+term_num = -1
 
-term_num = get_term_num(terms_info, term_cleaned)
-                
-print term_num
+while (term_num == -1):
+        term_input = (raw_input("Enter the term (e.g. Spring 2016): ")).strip()
+        term_year = term_input[-4:]
+        term_season = term_input[:-4].strip()
+        term_cleaned = term_season[0].upper() + term_season[1:].lower() + " " + term_year
+
+        terms_info = (uw.terms())["listings"]
+
+        term_num = get_term_num(terms_info, term_cleaned)
+
+        if term_num == -1:
+                print "Error, term not found, try again"
+
 
 course_name = []
 course_num = []
@@ -109,7 +121,7 @@ for index in range(len(course_name)):
                                 add_event(section_rel_2_date, section_rel_2_location, section_rel_2_name)
 
 
-file_out = open("uw-" + term_num + '.ics', 'w')
+file_out = open(term_cleaned + '.ics', 'w')
 file_out.writelines(calendar)
 file_out.close()
                                 
