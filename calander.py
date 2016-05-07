@@ -1,12 +1,16 @@
 from uwaterlooapi import UWaterlooAPI
-import pprint
+from ics import Calendar, Event
+
 uw = UWaterlooAPI(api_key="8ab9363c27cf84a3fdf526a89269e81a")
+
+
+calendar = Calendar()
 
 
 
 def add_event(date, location, name):
+        new_event = Event()
         return
-
 
 
 def get_section(course_info, sec_id):
@@ -28,9 +32,24 @@ def get_section_name(section):
                + section["section"] + " - " + section["title"]
 
 
+def get_term_num(terms_info, term_cleaned):
+        for year in terms_info:
+                for term in terms_info[year]:
+                        if term["name"] == term_cleaned:
+                                return term["id"]
 
-term_num = (raw_input("Enter the term number (e.g. Spring 2016 = 1165): ")).strip()
+        
 
+term_input = (raw_input("Enter the term (e.g. Spring 2016): ")).strip()
+term_year = term_input[-4:]
+term_season = term_input[:-4].strip()
+term_cleaned = term_season + " " + term_year
+
+terms_info = (uw.terms())["listings"]
+
+term_num = get_term_num(terms_info, term_cleaned)
+                
+print term_num
 
 course_name = []
 course_num = []
@@ -88,6 +107,11 @@ for index in range(len(course_name)):
                                 section_rel_2_name = get_section_name(related_section_2)
                                 
                                 add_event(section_rel_2_date, section_rel_2_location, section_rel_2_name)
+
+
+file_out = open("uw-" + term_num + '.ics', 'w')
+file_out.writelines(calendar)
+file_out.close()
                                 
                         
                         
