@@ -244,9 +244,8 @@ for index in range(len(course_name)):
                                 section_rel_1_location = get_section_location(related_section_1)
                                 section_rel_1_name = get_section_name(related_section_1)
 
-                                if related_section_1 != -1:
-                                        if related_section_1["associated_class"] != 99:
-                                                add_event(section_rel_1_date, section_rel_1_location, section_rel_1_name)
+                                if related_section_1["associated_class"] != "99" or related_section_1["section"][:-3].strip() == "TST":
+                                        add_event(section_rel_1_date, section_rel_1_location, section_rel_1_name)
 
 
                         if related_class_2:
@@ -255,10 +254,9 @@ for index in range(len(course_name)):
                                 section_rel_2_date = get_section_date(related_section_2)
                                 section_rel_2_location = get_section_location(related_section_2)
                                 section_rel_2_name = get_section_name(related_section_2)
-
-                                if related_section_2 != -1:
-                                        if related_section_2["associated_class"] != 99:
-                                                add_event(section_rel_2_date, section_rel_2_location, section_rel_2_name)
+                                
+                                if related_section_2["associated_class"] != "99" or related_section_2["section"][:-3].strip() == "TST":
+                                        add_event(section_rel_2_date, section_rel_2_location, section_rel_2_name)
 
         if section_found == 0:
                 print "Warning! Course section for " + name + " " + num + " " + sec + " could not be found!"
