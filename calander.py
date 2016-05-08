@@ -121,9 +121,11 @@ def add_event(date, location, my_name):
                         start_date = specific_event["date"]["start_date"]
                         date_year = term_dates[str(term_num)]["start"].year
 
-                        datetime_str_start = str(date_year) + start_date[:2] + start_date[2:] + " " + start_time + ":00"
+                        datetime_str_start = str(date_year) + start_date[:2] + start_date[-2:] + " " + start_time + ":00"
                         
-                        datetime_str_end = str(date_year) + start_date[:2] + start_date[2:] + " " + end_time + ":00"
+                        datetime_str_end = str(date_year) + start_date[:2] + start_date[-2:] + " " + end_time + ":00"
+
+                        print datetime_str_start
 
    
                         new_event = Event(name = my_name, begin = datetime_str_start,
