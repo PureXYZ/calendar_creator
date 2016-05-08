@@ -4,7 +4,7 @@ from datetime import date, timedelta, time, datetime
 import arrow
 from pytz import timezone
 
-uw = UWaterlooAPI(api_key="8ab9363c27cf84a3fdf526a89269e81a")
+uw = UWaterlooAPI(api_key="key")
 
 cal = Calendar()
                               
