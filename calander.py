@@ -1,7 +1,6 @@
 from uwaterlooapi import UWaterlooAPI
 from ics import Calendar, Event
 from datetime import date, timedelta
-import pprint
 
 uw = UWaterlooAPI(api_key="8ab9363c27cf84a3fdf526a89269e81a")
 
@@ -104,9 +103,6 @@ while True:
 
 def add_event(date, location, my_name):
 
-        pprint.pprint(date)
-        print my_name
-
         for specific_event in date:
 
                 if specific_event["date"]["start_date"]:
@@ -185,9 +181,6 @@ def add_event(date, location, my_name):
                                         datetime_str_start = str(current_date.year) + current_date_month + current_date_day + " " + start_time + ":00"
                         
                                         datetime_str_end = str(current_date.year) + current_date_month + current_date_day + " " + end_time + ":00"
-
-                                        print datetime_str_start
-                                        print datetime_str_end
                                         
                                         new_event = Event(name = my_name, begin = datetime_str_start,
                                         end = datetime_str_end, duration = None, uid = None,
@@ -264,19 +257,22 @@ for index in range(len(course_name)):
                 already_chosen1 = ""
                 already_chosen2 = ""
 
-                if related_section_1:
-                        already_chosen1 = related_section_1["section"][:-3].strip()
+                #if related_section_1:
+                #        already_chosen1 = related_section_1["section"][:-3].strip()
 
-                if related_section_2:
-                        already_chosen2 = related_section_2["section"][:-3].strip()
+                #if related_section_2:
+                #        already_chosen2 = related_section_2["section"][:-3].strip()
                         
                 pick_sections = get_sections_ass(course_info, 99, already_chosen1, already_chosen2)
+
+                pick_sections = remove_section_type(pick_sections, "TST")
 
                 if pick_sections:
                         print "\nNote: Section numbers are different for lectures and tutorials. (e.g. LEC 001 and TUT 101, 001 != 101)"
 
                 while pick_sections:
-                        print "\nNote for " + the_section["subject"] + " " + the_section["catalog_number"] + ": " + the_section["note"]
+                        if the_section["note"]:
+                                print "\nNote for " + the_section["subject"] + " " + the_section["catalog_number"] + ": " + the_section["note"]
                         section_type = pick_sections[0]["section"][:-3].strip()
 
                         section_chosen = -1
