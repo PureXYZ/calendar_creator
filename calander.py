@@ -1,6 +1,6 @@
 from uwaterlooapi import UWaterlooAPI
 from ics import Calendar, Event
-from datetime import date, datetime, time
+from datetime import date, timedelta
 import pprint
 
 uw = UWaterlooAPI(api_key="8ab9363c27cf84a3fdf526a89269e81a")
@@ -117,23 +117,72 @@ def add_event(date, location, my_name):
 
                         start_time = specific_event["date"]["start_time"]
                         end_time = specific_event["date"]["end_time"]
-                        location_str = specific_event["location"]["building"] + " " + specific_event["location"]["room"]
+                        location_str = str(specific_event["location"]["building"]) + " " + str(specific_event["location"]["room"])
                         start_date = specific_event["date"]["start_date"]
                         date_year = term_dates[str(term_num)]["start"].year
 
                         datetime_str_start = str(date_year) + start_date[:2] + start_date[-2:] + " " + start_time + ":00"
                         
                         datetime_str_end = str(date_year) + start_date[:2] + start_date[-2:] + " " + end_time + ":00"
-
-                        print datetime_str_start
-
    
                         new_event = Event(name = my_name, begin = datetime_str_start,
                                           end = datetime_str_end, duration = None, uid = None,
                                           description = None, created = None, location = location_str)
                         calendar.events.append(new_event)
 
-        
+                else:
+                        start_time = specific_event["date"]["start_time"]
+                        end_time = specific_event["date"]["end_time"]
+                        location_str = str(specific_event["location"]["building"]) + " " + str(specific_event["location"]["room"])
+
+                        start_date = term_dates[str(term_num)]["start"]
+                        end_date = term_dates[str(term_num)]["end"]
+
+                        weekdays = specific_event["date"]["weekdays"]
+                        
+                        counter = 0;
+                        date_days = [0,0,0,0,0,0,0]
+                        while  counter < len(weekdays):
+                                if weekdays[counter] == "T":
+                                        if (counter + 1) != len(weekdays):
+                                                if weekdays[counter + 1] == "h":
+                                                        date_days[5] = 1
+                                                        counter += 1
+                                                else:
+                                                        date_days[3] = 1
+                                        else:
+                                                date_days[3] = 1
+                                elif weekdays[counter] == "S":
+                                        date_days[0] = 1
+                                elif weekdays[counter] == "M":
+                                        date_days[1] = 1
+                                elif weekdays[counter] == "W":
+                                        date_days[3] = 1
+                                elif weekdays[counter] == "F":
+                                        date_days[5] = 1
+                                elif weekdays[counter] == "U":
+                                        date_days[6] = 1
+                                
+                                counter += 1
+
+
+                        days_in_term = (end_date - start_date).days + 1
+
+                        for index in range(days_in_term):
+                                
+                                one_day = timedelta(days = 1)
+                                current_date = start_date + one_day * index
+
+                                if date_days[current_date.weekday()] == 1:
+
+                                        datetime_str_start = str(current_date.year) + str(current_date.month) + str(current_date.day) + " " + start_time + ":00"
+                        
+                                        datetime_str_end = str(current_date.year) + str(current_date.month) + str(current_date.day) + " " + end_time + ":00"
+                                        
+                                        new_event = Event(name = my_name, begin = datetime_str_start,
+                                        end = datetime_str_end, duration = None, uid = None,
+                                        description = None, created = None, location = location_str)
+                                        calendar.events.append(new_event)
         return
 
 
