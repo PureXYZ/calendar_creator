@@ -1,11 +1,14 @@
 from uwaterlooapi import UWaterlooAPI
 from ics import Calendar, Event
-from datetime import date, datetime
+from datetime import date, datetime, time
 import pprint
 
 uw = UWaterlooAPI(api_key="8ab9363c27cf84a3fdf526a89269e81a")
 
 calendar = Calendar()
+                              
+term_dates = {"1165":{"start":date(2016, 5, 2), "end":date(2016, 7, 26)},
+              "1169":{"start":date(2016, 8, 8), "end":date(2016, 12, 5)}}
 
 
 def get_section(course_info, sec_id):
@@ -99,10 +102,37 @@ while True:
 
 
 
-def add_event(date, location, name):
+def add_event(date, location, my_name):
 
         pprint.pprint(date)
-        print name
+        print my_name
+
+        for specific_event in date:
+
+                if specific_event["date"]["start_date"]:
+
+                        if specific_event["date"]["start_date"] != specific_event["date"]["end_date"]:
+                                print "Error! Unexpected api return! Start date not same as end date!"
+                                break
+
+                        start_time = specific_event["date"]["start_time"]
+                        end_time = specific_event["date"]["end_time"]
+                        location_str = specific_event["location"]["building"] + " " + specific_event["location"]["room"]
+                        start_date = specific_event["date"]["start_date"]
+                        date_year = term_dates[str(term_num)]["start"].year
+
+                        datetime_str_start = str(date_year) + start_date[0:1] \
+                                             + start_date[3:4] + " " + start_time + ":00"
+                        
+                        datetime_str_end = str(date_year) + start_date[0:1] \
+                                             + start_date[3:4] + " " + end_time + ":00"
+
+   
+                        new_event = Event(name = my_name, begin = datetime_str_start,
+                                          end = datetime_str_end, duration = None, uid = None,
+                                          description = None, created = None, location = location_str)
+                        calendar.events.append(new_event)
+
         
         return
 
@@ -243,9 +273,11 @@ for index in range(len(course_name)):
 
 
 
-
 file_out = open(term_cleaned + '.ics', 'w')
 file_out.writelines(calendar)
 file_out.close()
-                        
-                        
+
+import os
+file_path = os.path.dirname(os.path.abspath(__file__))
+
+print "\n\nCalendar file (.ics) created. Located in " + file_path
