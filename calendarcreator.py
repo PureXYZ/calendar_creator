@@ -116,8 +116,12 @@ def add_event(date, location, my_name):
 
                         format_time = '%H:%M'
                         time_dur = datetime.strptime(end_time, format_time) - datetime.strptime(start_time, format_time)
+
+                        if specific_event["location"]["building"] and specific_event["location"]["room"]:
+                                location_str = str(specific_event["location"]["building"]) + " " + str(specific_event["location"]["room"])
+                        else:
+                                location_str = " "
                         
-                        location_str = str(specific_event["location"]["building"]) + " " + str(specific_event["location"]["room"])
                         start_date = specific_event["date"]["start_date"]
                         date_year = term_dates[str(term_num)]["start"].year
 
