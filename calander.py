@@ -175,9 +175,19 @@ def add_event(date, location, my_name):
 
                                 if date_days[current_date.weekday()] == 1:
 
-                                        datetime_str_start = str(current_date.year) + str(current_date.month) + str(current_date.day) + " " + start_time + ":00"
+                                        if len(str(current_date.month)) == 1:
+                                                current_date_month = "0" + str(current_date.month)
+
+                                        if len(str(current_date.day)) == 1:
+                                                current_date_day = "0" + str(current_date.day)
+                                                
+
+                                        datetime_str_start = str(current_date.year) + current_date_month + current_date_day + " " + start_time + ":00"
                         
-                                        datetime_str_end = str(current_date.year) + str(current_date.month) + str(current_date.day) + " " + end_time + ":00"
+                                        datetime_str_end = str(current_date.year) + current_date_month + current_date_day + " " + end_time + ":00"
+
+                                        print datetime_str_start
+                                        print datetime_str_end
                                         
                                         new_event = Event(name = my_name, begin = datetime_str_start,
                                         end = datetime_str_end, duration = None, uid = None,
