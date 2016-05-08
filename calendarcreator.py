@@ -1,10 +1,12 @@
 from uwaterlooapi import UWaterlooAPI
 from ics import Calendar, Event
-from datetime import date, timedelta
+from datetime import date, timedelta, time, datetime
+import arrow
+from dateutil import tz
 
 uw = UWaterlooAPI(api_key="8ab9363c27cf84a3fdf526a89269e81a")
 
-calendar = Calendar()
+cal = Calendar()
                               
 term_dates = {"1165":{"start":date(2016, 5, 2), "end":date(2016, 7, 26)},
               "1169":{"start":date(2016, 8, 8), "end":date(2016, 12, 5)}}
@@ -113,22 +115,32 @@ def add_event(date, location, my_name):
 
                         start_time = specific_event["date"]["start_time"]
                         end_time = specific_event["date"]["end_time"]
+
+                        format_time = '%H:%M'
+                        time_dur = datetime.strptime(end_time, format_time) - datetime.strptime(start_time, format_time)
+                        
                         location_str = str(specific_event["location"]["building"]) + " " + str(specific_event["location"]["room"])
                         start_date = specific_event["date"]["start_date"]
                         date_year = term_dates[str(term_num)]["start"].year
 
-                        datetime_str_start = str(date_year) + start_date[:2] + start_date[-2:] + " " + start_time + ":00"
+                        datetime_str_start = arrow.Arrow(date_year, int(start_date[:2]), int(start_date[-2:]), int(start_time[:2]), int(start_time[-2:]),0,0,tz.gettz('US/Eastern'))
                         
-                        datetime_str_end = str(date_year) + start_date[:2] + start_date[-2:] + " " + end_time + ":00"
-   
-                        new_event = Event(name = my_name, begin = datetime_str_start,
-                                          end = datetime_str_end, duration = None, uid = None,
-                                          description = None, created = None, location = location_str)
-                        calendar.events.append(new_event)
+                        new_event = Event()
+                        new_event.name = my_name
+                        new_event.location = location_str
+                        new_event.begin = datetime_str_start
+                        new_event.duration = {"hours":time_dur.seconds//3600, "minutes":(time_dur.seconds//60)%60}
+                        
+                        cal.events.append(new_event)
 
                 else:
                         start_time = specific_event["date"]["start_time"]
                         end_time = specific_event["date"]["end_time"]
+
+                        format_time = '%H:%M'
+                        time_dur = datetime.strptime(end_time, format_time) - datetime.strptime(start_time, format_time)
+                        
+                        
                         location_str = str(specific_event["location"]["building"]) + " " + str(specific_event["location"]["room"])
 
                         start_date = term_dates[str(term_num)]["start"]
@@ -142,20 +154,20 @@ def add_event(date, location, my_name):
                                 if weekdays[counter] == "T":
                                         if (counter + 1) != len(weekdays):
                                                 if weekdays[counter + 1] == "h":
-                                                        date_days[5] = 1
+                                                        date_days[3] = 1
                                                         counter += 1
                                                 else:
-                                                        date_days[3] = 1
+                                                        date_days[1] = 1
                                         else:
                                                 date_days[3] = 1
                                 elif weekdays[counter] == "S":
-                                        date_days[0] = 1
-                                elif weekdays[counter] == "M":
-                                        date_days[1] = 1
-                                elif weekdays[counter] == "W":
-                                        date_days[3] = 1
-                                elif weekdays[counter] == "F":
                                         date_days[5] = 1
+                                elif weekdays[counter] == "M":
+                                        date_days[0] = 1
+                                elif weekdays[counter] == "W":
+                                        date_days[2] = 1
+                                elif weekdays[counter] == "F":
+                                        date_days[4] = 1
                                 elif weekdays[counter] == "U":
                                         date_days[6] = 1
                                 
@@ -169,29 +181,17 @@ def add_event(date, location, my_name):
                                 one_day = timedelta(days = 1)
                                 current_date = start_date + one_day * index
 
-                                print current_date
-
                                 if date_days[current_date.weekday()] == 1:
-
-                                        if len(str(current_date.month)) == 1:
-                                                current_date_month = "0" + str(current_date.month)
-                                        else:
-                                                current_date_month = str(current_date.month)
-
-                                        if len(str(current_date.day)) == 1:
-                                                current_date_day = "0" + str(current_date.day)
-                                        else:
-                                                current_date_day = str(current_date.day)
-                                                
-
-                                        datetime_str_start = str(current_date.year) + current_date_month + current_date_day + " " + start_time + ":00"
-                        
-                                        datetime_str_end = str(current_date.year) + current_date_month + current_date_day + " " + end_time + ":00"
+           
+                                        datetime_str_start = arrow.Arrow(current_date.year, current_date.month, current_date.day, int(start_time[:2]), int(start_time[-2:]),0,0,tz.gettz('US/Eastern'))
                                         
-                                        new_event = Event(name = my_name, begin = datetime_str_start,
-                                        end = datetime_str_end, duration = None, uid = None,
-                                        description = None, created = None, location = location_str)
-                                        calendar.events.append(new_event)
+                                        new_event = Event()
+                                        new_event.name = my_name
+                                        new_event.location = location_str
+                                        new_event.begin = datetime_str_start
+                                        new_event.duration = {"hours":time_dur.seconds//3600, "minutes":(time_dur.seconds//60)%60}
+                                        
+                                        cal.events.append(new_event)
         return
 
 
@@ -334,9 +334,8 @@ for index in range(len(course_name)):
 
 
 
-file_out = open(term_cleaned + '.ics', 'w')
-file_out.writelines(calendar)
-file_out.close()
+with open(term_cleaned + '.ics', 'w') as my_file:
+        my_file.writelines(cal)
 
 import os
 file_path = os.path.dirname(os.path.abspath(__file__))
