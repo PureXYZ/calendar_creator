@@ -3,6 +3,7 @@ from ics import Calendar, Event
 from datetime import date, timedelta, time, datetime
 import arrow
 from dateutil import tz
+import pprint
 
 uw = UWaterlooAPI(api_key="8ab9363c27cf84a3fdf526a89269e81a")
 
@@ -30,9 +31,7 @@ def get_sections_ass(course_info, ass_id, already_chosen1, already_chosen2):
         sections = []
         
         for section in course_info:
-                if section["associated_class"] == ass_id \
-                   and section["section"][:-3].strip() != already_chosen1 \
-                   and section["section"][:-3].strip() != already_chosen2:
+                if section["associated_class"] == ass_id and section["section"][:-3].strip() != already_chosen1 and section["section"][:-3].strip() != already_chosen2:
                         sections.append(section)
                         
         return sections
@@ -241,8 +240,9 @@ for index in range(len(course_name)):
                                 section_rel_1_date = get_section_date(related_section_1)
                                 section_rel_1_location = get_section_location(related_section_1)
                                 section_rel_1_name = get_section_name(related_section_1)
-                                
-                                add_event(section_rel_1_date, section_rel_1_location, section_rel_1_name)
+
+                                if related_section_1["associated_class"] != 99:
+                                        add_event(section_rel_1_date, section_rel_1_location, section_rel_1_name)
 
 
                         if related_class_2:
@@ -251,11 +251,12 @@ for index in range(len(course_name)):
                                 section_rel_2_date = get_section_date(related_section_2)
                                 section_rel_2_location = get_section_location(related_section_2)
                                 section_rel_2_name = get_section_name(related_section_2)
-                                
-                                add_event(section_rel_2_date, section_rel_2_location, section_rel_2_name)
+
+                                if related_section_1["associated_class"] != 99:
+                                        add_event(section_rel_2_date, section_rel_2_location, section_rel_2_name)
 
         if section_found == 0:
-                print "Warning! Course section " + sec + " could not be found!"
+                print "Warning! Course section for " + name + " " + num + " " + sec + " could not be found!"
                 continue
         
 
@@ -318,7 +319,7 @@ for index in range(len(course_name)):
                 if related_section_2:
                         already_chosen2 = related_section_2["section"][:-3].strip()
                         
-                course_info_main_removed = get_sections_ass(course_info, ass_id, already_chosen1, already_chosen2)
+                course_info_main_removed = get_sections_ass(course_info_main_removed, ass_id, already_chosen1, already_chosen2)
                 
                 
                 for section in course_info_main_removed:
