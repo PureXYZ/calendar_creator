@@ -2,8 +2,7 @@ from uwaterlooapi import UWaterlooAPI
 from ics import Calendar, Event
 from datetime import date, timedelta, time, datetime
 import arrow
-from dateutil import tz
-import pprint
+from pytz import timezone
 
 uw = UWaterlooAPI(api_key="8ab9363c27cf84a3fdf526a89269e81a")
 
@@ -122,7 +121,9 @@ def add_event(date, location, my_name):
                         start_date = specific_event["date"]["start_date"]
                         date_year = term_dates[str(term_num)]["start"].year
 
-                        datetime_str_start = arrow.Arrow(date_year, int(start_date[:2]), int(start_date[-2:]), int(start_time[:2]), int(start_time[-2:]),0,0,tz.gettz('US/Eastern'))
+                        my_time_zone = timezone('US/Eastern')
+                        dt = my_time_zone.localize(datetime(date_year, int(start_date[:2]), int(start_date[-2:]), int(start_time[:2]), int(start_time[-2:]),0,0))
+                        datetime_str_start = arrow.get(dt)
                         
                         new_event = Event()
                         new_event.name = my_name
@@ -181,8 +182,10 @@ def add_event(date, location, my_name):
                                 current_date = start_date + one_day * index
 
                                 if date_days[current_date.weekday()] == 1:
-           
-                                        datetime_str_start = arrow.Arrow(current_date.year, current_date.month, current_date.day, int(start_time[:2]), int(start_time[-2:]),0,0,tz.gettz('US/Eastern'))
+
+                                        my_time_zone = timezone('US/Eastern')
+                                        dt = my_time_zone.localize(datetime(current_date.year, current_date.month, current_date.day, int(start_time[:2]), int(start_time[-2:]), 0, 0))
+                                        datetime_str_start = arrow.get(dt)
                                         
                                         new_event = Event()
                                         new_event.name = my_name
