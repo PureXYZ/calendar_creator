@@ -78,7 +78,7 @@ while (term_num == -1):
 
         term_num = get_term_num(terms_info, term_cleaned)
 
-        if term_num == -1:
+        if term_num == -1 or str(term_num) not in term_dates:
                 print "Error, term not found, try again"
 
 
@@ -169,13 +169,19 @@ def add_event(date, location, my_name):
                                 one_day = timedelta(days = 1)
                                 current_date = start_date + one_day * index
 
+                                print current_date
+
                                 if date_days[current_date.weekday()] == 1:
 
                                         if len(str(current_date.month)) == 1:
                                                 current_date_month = "0" + str(current_date.month)
+                                        else:
+                                                current_date_month = str(current_date.month)
 
                                         if len(str(current_date.day)) == 1:
                                                 current_date_day = "0" + str(current_date.day)
+                                        else:
+                                                current_date_day = str(current_date.day)
                                                 
 
                                         datetime_str_start = str(current_date.year) + current_date_month + current_date_day + " " + start_time + ":00"
