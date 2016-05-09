@@ -7,8 +7,6 @@ import pprint
 
 uw = UWaterlooAPI(api_key="8ab9363c27cf84a3fdf526a89269e81a")
 
-pprint.pprint(uw.term_course_schedule("1165", "stat", "230"))
-
 cal = Calendar()
                               
 term_dates = {"1165":{"start":date(2016, 5, 2), "end":date(2016, 7, 26)},
@@ -88,6 +86,7 @@ while (term_num == -1):
 
         if term_num == -1 or str(term_num) not in term_dates:
                 print "Error, term not found, try again"
+                term_num = -1
 
 
 course_name = []
@@ -276,7 +275,7 @@ for index in range(len(course_name)):
                                 section_rel_1_location = get_section_location(related_section_1)
                                 section_rel_1_name = get_section_name(related_section_1)
 
-                                if related_section_1["associated_class"] != 99 or related_section_1["section"][:-3].strip() == "TST":
+                                if related_section_1["associated_class"] != 99 and related_section_1["section"][:-3].strip() != "TST":
                                         add_event(section_rel_1_date, section_rel_1_location, section_rel_1_name)
 
 
@@ -287,7 +286,7 @@ for index in range(len(course_name)):
                                 section_rel_2_location = get_section_location(related_section_2)
                                 section_rel_2_name = get_section_name(related_section_2)
                                 
-                                if related_section_2["associated_class"] != 99 or related_section_2["section"][:-3].strip() == "TST":
+                                if related_section_2["associated_class"] != 99 and related_section_2["section"][:-3].strip() != "TST":
                                         add_event(section_rel_2_date, section_rel_2_location, section_rel_2_name)
 
         if section_found == 0:
@@ -307,11 +306,9 @@ for index in range(len(course_name)):
 
                 if not is_engineer:              
                         pick_sections = get_sections_ass(course_info, 99, already_chosen1, already_chosen2)
-                        pick_sections = remove_section_type(pick_sections, "TST")
                 else:
                         pick_sections = get_sections_ass(course_info, the_section["associated_class"], already_chosen1, already_chosen2)
                         pick_sections = remove_section_type(pick_sections, the_section["section"][:-3].strip())
-                        pick_sections = remove_section_type(pick_sections, "TST")
 
                 if pick_sections:
                         print "\nNote: Section numbers are different for lectures and tutorials. (e.g. LEC 001 and TUT 101, 001 != 101)"
