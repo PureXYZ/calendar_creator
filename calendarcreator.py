@@ -7,6 +7,8 @@ import pprint
 
 uw = UWaterlooAPI(api_key="8ab9363c27cf84a3fdf526a89269e81a")
 
+pprint.pprint(uw.term_course_schedule("1165", "stat", "230"))
+
 cal = Calendar()
                               
 term_dates = {"1165":{"start":date(2016, 5, 2), "end":date(2016, 7, 26)},
@@ -102,8 +104,29 @@ while True:
                 break
         
         course_name.append((course_input.strip()[:4]).strip())
-        course_num.append(((course_input.strip()[-4:]).strip()[:-4]).strip())
+        course_num.append(((course_input.strip()[:-4]).strip()[-4:]).strip())
         course_section.append((course_input.strip()[-3:]).strip())
+
+
+is_engineer = False
+
+while True:
+        eng_input = (raw_input("\nAre you an engineer or taking engineering course? (y/n): ")).strip()
+        
+        if eng_input.lower() != "y" and eng_input.lower() != "n":
+                print "Error, invalid input!"
+                continue
+        else:
+                if eng_input.lower() == "y":
+                        is_engineer = True
+                        break
+                elif eng_input.lower() == "n":
+                        is_engineer = False
+                        break
+                else:
+                        print "Error! This should never happen"
+                        break
+
 
 
 def add_event(date, location, my_name):
@@ -253,7 +276,7 @@ for index in range(len(course_name)):
                                 section_rel_1_location = get_section_location(related_section_1)
                                 section_rel_1_name = get_section_name(related_section_1)
 
-                                if related_section_1["associated_class"] != "99" or related_section_1["section"][:-3].strip() == "TST":
+                                if related_section_1["associated_class"] != 99 or related_section_1["section"][:-3].strip() == "TST":
                                         add_event(section_rel_1_date, section_rel_1_location, section_rel_1_name)
 
 
@@ -264,7 +287,7 @@ for index in range(len(course_name)):
                                 section_rel_2_location = get_section_location(related_section_2)
                                 section_rel_2_name = get_section_name(related_section_2)
                                 
-                                if related_section_2["associated_class"] != "99" or related_section_2["section"][:-3].strip() == "TST":
+                                if related_section_2["associated_class"] != 99 or related_section_2["section"][:-3].strip() == "TST":
                                         add_event(section_rel_2_date, section_rel_2_location, section_rel_2_name)
 
         if section_found == 0:
@@ -272,7 +295,7 @@ for index in range(len(course_name)):
                 continue
         
 
-        if custom_pick == 1:
+        if custom_pick == 1 or is_engineer:
                 already_chosen1 = ""
                 already_chosen2 = ""
 
@@ -281,10 +304,14 @@ for index in range(len(course_name)):
 
                 #if related_section_2:
                 #        already_chosen2 = related_section_2["section"][:-3].strip()
-                        
-                pick_sections = get_sections_ass(course_info, 99, already_chosen1, already_chosen2)
 
-                pick_sections = remove_section_type(pick_sections, "TST")
+                if not is_engineer:              
+                        pick_sections = get_sections_ass(course_info, 99, already_chosen1, already_chosen2)
+                        pick_sections = remove_section_type(pick_sections, "TST")
+                else:
+                        pick_sections = get_sections_ass(course_info, the_section["associated_class"], already_chosen1, already_chosen2)
+                        pick_sections = remove_section_type(pick_sections, the_section["section"][:-3].strip())
+                        pick_sections = remove_section_type(pick_sections, "TST")
 
                 if pick_sections:
                         print "\nNote: Section numbers are different for lectures and tutorials. (e.g. LEC 001 and TUT 101, 001 != 101)"
