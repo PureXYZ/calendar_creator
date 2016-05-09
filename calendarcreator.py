@@ -3,8 +3,9 @@ from ics import Calendar, Event
 from datetime import date, timedelta, time, datetime
 import arrow
 from pytz import timezone
+import pprint
 
-uw = UWaterlooAPI(api_key="key")
+uw = UWaterlooAPI(api_key="8ab9363c27cf84a3fdf526a89269e81a")
 
 cal = Calendar()
                               
@@ -70,6 +71,11 @@ term_num = -1
 
 while (term_num == -1):
         term_input = (raw_input("Enter the term (e.g. Spring 2016): ")).strip()
+
+        if not term_input:
+                print "Error, term not found, try again"
+                continue
+        
         term_year = term_input[-4:]
         term_season = term_input[:-4].strip()
         term_cleaned = term_season[0].upper() + term_season[1:].lower() + " " + term_year
@@ -95,10 +101,9 @@ while True:
         if course_input.strip().lower() == "done":
                 break
         
-        course_name.append((course_input.strip()[:-3]).strip()[:-3].strip())
-        course_num.append((course_input.strip()[:-3]).strip()[-3:])
+        course_name.append((course_input.strip()[:4]).strip())
+        course_num.append(((course_input.strip()[-4:]).strip()[:-4]).strip())
         course_section.append((course_input.strip()[-3:]).strip())
-
 
 
 def add_event(date, location, my_name):
