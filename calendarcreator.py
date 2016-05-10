@@ -3,7 +3,6 @@ from ics import Calendar, Event
 from datetime import date, timedelta, time, datetime
 import arrow
 from pytz import timezone
-import pprint
 
 uw = UWaterlooAPI(api_key="8ab9363c27cf84a3fdf526a89269e81a")
 
@@ -61,7 +60,7 @@ def get_term_num(terms_info, term_cleaned):
 def remove_section_type(pick_sections, section_type):
         sections = []
         for section in pick_sections:
-                if section["section"][:-3].strip() != section_type:
+                if ((section["section"])[:-3]).strip() != section_type:
                         sections.append(section)
         return sections
 
@@ -128,6 +127,9 @@ while True:
 
 
 
+events_stack = []
+
+
 def add_event(date, location, my_name):
 
         for specific_event in date:
@@ -161,8 +163,13 @@ def add_event(date, location, my_name):
                         new_event.location = location_str
                         new_event.begin = datetime_str_start
                         new_event.duration = {"hours":time_dur.seconds//3600, "minutes":(time_dur.seconds//60)%60}
-                        
-                        cal.events.append(new_event)
+
+
+                        if datetime_str_start in events_stack:
+                                print "Warning! Duplicate event detected! Event: " + my_name + " discarded!"
+                        else:
+                                events_stack.append(datetime_str_start)                            
+                                cal.events.append(new_event)
 
                 else:
                         start_time = specific_event["date"]["start_time"]
@@ -224,7 +231,11 @@ def add_event(date, location, my_name):
                                         new_event.begin = datetime_str_start
                                         new_event.duration = {"hours":time_dur.seconds//3600, "minutes":(time_dur.seconds//60)%60}
                                         
-                                        cal.events.append(new_event)
+                                        if datetime_str_start in events_stack:
+                                                print "Warning! Duplicate event detected! Event: " + my_name + " discarded!"
+                                        else:
+                                                events_stack.append(datetime_str_start)                            
+                                                cal.events.append(new_event)
         return
 
 
@@ -313,10 +324,11 @@ for index in range(len(course_name)):
                 if pick_sections:
                         print "\nNote: Section numbers are different for lectures and tutorials. (e.g. LEC 001 and TUT 101, 001 != 101)"
 
+
                 while pick_sections:
                         if the_section["note"]:
                                 print "\nNote for " + the_section["subject"] + " " + the_section["catalog_number"] + ": " + the_section["note"]
-                        section_type = pick_sections[0]["section"][:-3].strip()
+                        section_type = ((pick_sections[0])["section"])[:-3].strip()
 
                         section_chosen = -1
                         while section_chosen == -1:
@@ -326,7 +338,7 @@ for index in range(len(course_name)):
                                                         the_section["catalog_number"] + " (e.g. TUT 101 = 101): ")).strip()
                                 section_input_cleaned = section_type + " " + pick_input
                                    
-                                section_chosen = get_section_full(course_info, section_input_cleaned)
+                                section_chosen = get_section_full(pick_sections, section_input_cleaned)
 
                                 if section_chosen == -1:
                                         print "\nError! section not found please try again!"
@@ -335,13 +347,13 @@ for index in range(len(course_name)):
                         section_chosen_date = get_section_date(section_chosen)
                         section_chosen_location = get_section_location(section_chosen)
                         section_chosen_name = get_section_name(section_chosen)
-                                
+                        
                         add_event(section_chosen_date, section_chosen_location, section_chosen_name)
 
                         pick_sections = remove_section_type(pick_sections, section_type)
 
 
-        if custom_pick == 0:
+        elif custom_pick == 0:
                 ass_id = the_section["associated_class"]
 
                 course_info_main_removed = remove_section_type(course_info, the_section["section"][:-3].strip())
