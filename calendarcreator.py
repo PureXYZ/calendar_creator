@@ -11,8 +11,8 @@ uw = UWaterlooAPI(api_key="8ab9363c27cf84a3fdf526a89269e81a")
 
 cal = Calendar()
 
-#       Term start/end dates (not in api)                              
-term_dates = {"1165":{"start":date(2016, 5, 2), "end":date(2016, 7, 26)},
+#       Term start/end dates (not in api)
+term_dates = {"1171":{"start":date(2016, 1, 3), "end":date(2016, 4, 3)},
               "1169":{"start":date(2016, 8, 8), "end":date(2016, 12, 5)}}
 
 
@@ -28,25 +28,25 @@ def get_section(course_info, sec_id):
 
 #       get_section(str, str) returns first section(dic) equal
 #               to section_name.
-#       returns -1 if not found      
+#       returns -1 if not found
 def get_section_full(course_info, section_name):
         for section in course_info:
                 if section["section"] == section_name:
                         return section
         return -1
-                
+
 #       get_sections_ass(str,str,str,str) returns sections in course_info
 #               that have the same associated id as ass_id, but not the same
 #               course number as already_chosen1 and already_chosen2
 def get_sections_ass(course_info, ass_id, already_chosen1, already_chosen2):
         sections = []
-        
+
         for section in course_info:
                 if section["associated_class"] == ass_id and\
                    section["section"][:-3].strip() != already_chosen1 and\
                    section["section"][:-3].strip() != already_chosen2:
                         sections.append(section)
-                        
+
         return sections
 
 
@@ -93,7 +93,7 @@ while (term_num == -1):
         if not term_input:
                 print "Error, term not found, try again"
                 continue
-        
+
         term_year = term_input[-4:]
         term_season = term_input[:-4].strip()
         term_cleaned = term_season[0].upper() + term_season[1:].lower() + " " + term_year
@@ -118,7 +118,7 @@ while True:
         course_input = (raw_input("Enter course (e.g. Math 237 in section 1 = Math 237 001): ")).strip()
         if course_input.strip().lower() == "done":
                 break
-        
+
         course_name.append((course_input.strip()[:4]).strip())
         course_num.append(((course_input.strip()[:-4]).strip()[-4:]).strip())
         course_section.append((course_input.strip()[-3:]).strip())
@@ -129,7 +129,7 @@ is_engineer = False
 #       User input is_engineer
 while True:
         eng_input = (raw_input("\nAre you an engineer or taking engineering course? (y/n): ")).strip()
-        
+
         if eng_input.lower() != "y" and eng_input.lower() != "n":
                 print "Error, invalid input!"
                 continue
@@ -146,7 +146,7 @@ while True:
 
 
 #       record of all events added
-events_stack = [] 
+events_stack = []
 
 
 #       add_event(class info,,name) adds event to calendar with name
@@ -178,7 +178,7 @@ def add_event(date, location, my_name):
                                                + " " + str(specific_event["location"]["room"])
                         else:
                                 location_str = " "
-                        
+
                         start_date = specific_event["date"]["start_date"]
                         date_year = term_dates[str(term_num)]["start"].year
 
@@ -187,7 +187,7 @@ def add_event(date, location, my_name):
                                                             int(start_date[-2:]), int(start_time[:2]),
                                                             int(start_time[-2:]),0,0))
                         datetime_str_start = arrow.get(dt)
-                        
+
                         new_event = Event()
                         new_event.name = my_name
                         new_event.location = location_str
@@ -200,7 +200,7 @@ def add_event(date, location, my_name):
                                 print "Warning! Duplicate event detected! Event: " \
                                       + my_name + " discarded!"
                         else:
-                                events_stack.append(datetime_str_start)                            
+                                events_stack.append(datetime_str_start)
                                 cal.events.append(new_event)
 
                 #       If there is no specified date (interates through every day in term)
@@ -211,8 +211,8 @@ def add_event(date, location, my_name):
                         format_time = '%H:%M'
                         time_dur = datetime.strptime(end_time, format_time) - \
                                    datetime.strptime(start_time, format_time)
-                        
-                        
+
+
                         location_str = str(specific_event["location"]["building"]) \
                                        + " " + str(specific_event["location"]["room"])
 
@@ -220,7 +220,7 @@ def add_event(date, location, my_name):
                         end_date = term_dates[str(term_num)]["end"]
 
                         weekdays = specific_event["date"]["weekdays"]
-                        
+
                         counter = 0;
                         date_days = [0,0,0,0,0,0,0]
                         while  counter < len(weekdays):
@@ -243,14 +243,14 @@ def add_event(date, location, my_name):
                                         date_days[4] = 1
                                 elif weekdays[counter] == "U":
                                         date_days[6] = 1
-                                
+
                                 counter += 1
 
 
                         days_in_term = (end_date - start_date).days + 1
 
                         for index in range(days_in_term):
-                                
+
                                 one_day = timedelta(days = 1)
                                 current_date = start_date + one_day * index
 
@@ -262,24 +262,24 @@ def add_event(date, location, my_name):
                                                        current_date.day, int(start_time[:2]),
                                                        int(start_time[-2:]), 0, 0))
                                         datetime_str_start = arrow.get(dt)
-                                        
+
                                         new_event = Event()
                                         new_event.name = my_name
                                         new_event.location = location_str
                                         new_event.begin = datetime_str_start
                                         new_event.duration = {"hours":time_dur.seconds//3600,
                                                               "minutes":(time_dur.seconds//60)%60}
-                                        
+
                                         if datetime_str_start in events_stack:
                                                 print "Warning! Duplicate event detected! Event: " \
                                                       + my_name + " discarded!"
                                         else:
-                                                events_stack.append(datetime_str_start)                            
+                                                events_stack.append(datetime_str_start)
                                                 cal.events.append(new_event)
         return
 
 
-       
+
 #       Iterates through every input course
 for index in range(len(course_name)):
         name = course_name[index]
@@ -296,7 +296,7 @@ for index in range(len(course_name)):
 
         custom_pick = 0;
         section_found = 0;
-        
+
         for section in course_info:
 
                 #       If there are sections manually selected
@@ -315,7 +315,7 @@ for index in range(len(course_name)):
                         section_name = get_section_name(section)
 
                         add_event(section_date, section_location, section_name)
-                        
+
                         related_class_1 = section["related_component_1"]
                         related_class_2 = section["related_component_2"]
                         related_section_1 = []
@@ -326,7 +326,7 @@ for index in range(len(course_name)):
                         if related_class_1:
                                 related_section_1 = get_section(course_info,
                                                                 related_class_1)
-                                
+
                                 section_rel_1_date = get_section_date(related_section_1)
                                 section_rel_1_location = get_section_location(related_section_1)
                                 section_rel_1_name = get_section_name(related_section_1)
@@ -344,7 +344,7 @@ for index in range(len(course_name)):
                                 section_rel_2_date = get_section_date(related_section_2)
                                 section_rel_2_location = get_section_location(related_section_2)
                                 section_rel_2_name = get_section_name(related_section_2)
-                                
+
                                 if related_section_2["associated_class"] != 99 and \
                                    related_section_2["section"][:-3].strip() != "TST":
                                         add_event(section_rel_2_date, section_rel_2_location,
@@ -354,7 +354,7 @@ for index in range(len(course_name)):
                 print "Warning! Course section for " + name + " "\
                       + num + " " + sec + " could not be found!"
                 continue
-        
+
 
         #       courses with custom options or engineers must specify given section
         if custom_pick == 1 or is_engineer:
@@ -363,7 +363,7 @@ for index in range(len(course_name)):
 
                 #       Engineers pick from associated courses,
                 #       else others pick from custom pick courses
-                if not is_engineer:              
+                if not is_engineer:
                         pick_sections = get_sections_ass(course_info, 99, already_chosen1,
                                                          already_chosen2)
                 else:
@@ -385,25 +385,25 @@ for index in range(len(course_name)):
 
                         section_chosen = -1
                         while section_chosen == -1:
-                                
+
                                 pick_input = (raw_input("\nPlease enter your enrolled " \
                                                         + section_type + " section for " \
                                                         + the_section["subject"] + " " + \
                                                         the_section["catalog_number"] \
                                                         + " (e.g. TUT 101 = 101): ")).strip()
                                 section_input_cleaned = section_type + " " + pick_input
-                                   
+
                                 section_chosen = get_section_full(pick_sections,
                                                                   section_input_cleaned)
 
                                 if section_chosen == -1:
                                         print "\nError! section not found please try again!"
-                        
+
 
                         section_chosen_date = get_section_date(section_chosen)
                         section_chosen_location = get_section_location(section_chosen)
                         section_chosen_name = get_section_name(section_chosen)
-                        
+
                         add_event(section_chosen_date, section_chosen_location,
                                   section_chosen_name)
 
@@ -427,22 +427,22 @@ for index in range(len(course_name)):
 
                 if related_section_2:
                         already_chosen2 = related_section_2["section"][:-3].strip()
-                        
+
                 course_info_main_removed = get_sections_ass(course_info_main_removed,
                                                             ass_id, already_chosen1,
                                                             already_chosen2)
-                
-                
+
+
                 for section in course_info_main_removed:
                         if section["associated_class"] == ass_id:
                                 section_date = get_section_date(section)
                                 section_location = get_section_location(section)
                                 section_name = get_section_name(section)
                                 add_event(section_date, section_location, section_name)
-                
 
 
-                
+
+
 
 
 #       Write to file
