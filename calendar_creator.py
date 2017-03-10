@@ -12,7 +12,7 @@ uw = UWaterlooAPI(api_key="8ab9363c27cf84a3fdf526a89269e81a")
 cal = Calendar()
 
 #       Term start/end dates (not in api)
-term_dates = {"1171":{"start":date(2016, 1, 3), "end":date(2016, 4, 3)},
+term_dates = {"1171":{"start":date(2017, 1, 3), "end":date(2017, 4, 3)},
               "1169":{"start":date(2016, 8, 8), "end":date(2016, 12, 5)}}
 
 
